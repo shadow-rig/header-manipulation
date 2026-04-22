@@ -34,7 +34,7 @@ app.get('/console', (req, res) => {
                 <h1>403 Forbidden</h1>
                 <p>Insufficient Permissions: Your current role does not have access to this management console.</p>
                 <hr style="width: 50%">
-                <p style="color: #666;"><i>Server Debug Trace: <b>User-Role: ${userRole || 'guest'}</b></i></p>
+                <p style="color: #666;"><i>Server Debug Trace: <b>role: ${userRole || 'guest'}</b></i></p>
             </div>
         `);
     }
