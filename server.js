@@ -1,46 +1,48 @@
 const express = require('express');
 const app = express();
-const path = require('path');
 const PORT = process.env.PORT || 3000;
 
-// Serve the "innocent" landing page
+// Middleware to "leak" the role header in every response
+app.use((req, res, next) => {
+    res.setHeader('role', 'guest'); 
+    next();
+});
+
 app.get('/', (req, res) => {
     res.send(`
         <html>
             <head><title>Corporate Portal</title></head>
             <body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-                <h1>Welcome to the Employee Portal</h1>
-                <p>Public notice: All activity is logged.</p>
-                <nav><a href="/">Home</a> | <a href="#">Contact</a></nav>
+                <h1>Internal Employee Portal</h1>
+                <p>Welcome. Please use the internal tools for your daily tasks.</p>
             </body>
         </html>
     `);
 });
 
-// The hidden directory found in common.txt (e.g., /console or /internal)
+// The directory found in common.txt
 app.get('/console', (req, res) => {
-    const userRole = req.get('role'); // Students will look for this header
+    // The server checks the REQUEST header sent by the user
+    const userRole = req.get('role');
 
     if (userRole === 'admin') {
         res.send(`
-            <div style="color: green; border: 2px solid green; padding: 20px;">
-                <h1>Admin Access Granted</h1>
-                <p>System status: Nominal.</p>
-                <p><b>FLAG:</b> CTF{HEADER_HACKER_99}</p>
+            <div style="color: green; border: 2px solid green; padding: 20px; font-family: monospace;">
+                <h1>ACCESS GRANTED</h1>
+                <p>System identity verified as ADMINISTRATOR.</p>
+                <p><b>FLAG:</b> CTF{HEADER_FLIP_SUCCESS}</p>
             </div>
         `);
     } else {
-        // Students see this first after fuzzing
         res.status(403).send(`
-            <div style="color: red; font-family: sans-serif; text-align: center;">
+            <div style="font-family: sans-serif; text-align: center;">
                 <h1>403 Forbidden</h1>
-                <p>Error: Access Denied. Your current role does not have permission to view /console.</p>
-                <p><i>Server Trace: User-Role: ${userRole || 'guest'}</i></p>
+                <p>Insufficient Permissions: Your current role does not have access to this management console.</p>
             </div>
         `);
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Lab running on port ${PORT}`);
 });
