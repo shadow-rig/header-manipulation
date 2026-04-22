@@ -17,8 +17,8 @@ app.get('/', (req, res) => {
 
 // The hidden directory found in common.txt
 app.get('/console', (req, res) => {
-    // We specifically look for "User-Role" now to match the hint
-    const userRole = req.get('User-Role');
+    // We are now checking specifically for the 'role' header
+    const userRole = req.get('role');
 
     if (userRole === 'admin') {
         res.send(`
@@ -29,12 +29,13 @@ app.get('/console', (req, res) => {
             </div>
         `);
     } else {
+        // Updated error message to show "role: guest" as requested
         res.status(403).send(`
             <div style="font-family: sans-serif; text-align: center; color: #333;">
                 <h1>403 Forbidden</h1>
-                <p>Insufficient Permissions: Your current role does not have access to this management console.</p>
+                <p>Error: Access Denied. Your current role does not have permission to view /console.</p>
                 <hr style="width: 50%">
-                <p style="color: #666;"><i>Server Debug Trace: <b>role: ${userRole || 'guest'}</b></i></p>
+                <p style="color: #666;"><i>Server Trace: <b>role: ${userRole || 'guest'}</b></i></p>
             </div>
         `);
     }
